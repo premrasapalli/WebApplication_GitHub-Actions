@@ -15,7 +15,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
 
       - name: Install dependencies
         run: npm install
@@ -23,15 +23,12 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Build Docker image
-        run: docker build -t webapp-github-actions:latest .
+      # 🟢 Install Railway CLI
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
 
-      - name: Push to Docker Hub
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run: |
-          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-          docker tag webapp-github-actions:latest ${{ secrets.DOCKERHUB_USERNAME }}/webapp-github-actions:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/webapp-github-actions:latest
-
-      - name: Deploy to Render
-        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+      # 🟢 Deploy to Railway
+      - name: Deploy to Railway
+        run: railway up --service ${{ secrets.RAILWAY_SERVICE_ID }}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
