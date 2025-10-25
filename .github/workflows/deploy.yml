@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20 # Use a valid Node.js version
+          node-version: 20
 
       # Step 3: Install dependencies (in myapp folder)
       - name: Install dependencies
@@ -33,11 +33,9 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      # Step 6: Login to Railway
-      - name: Railway login
-        run: railway login --apiKey ${{ secrets.RAILWAY_TOKEN }}
-
-      # Step 7: Deploy to Railway
+      # Step 6: Deploy to Railway
       - name: Deploy to Railway
         run: railway up --service ${{ secrets.RAILWAY_SERVICE_NAME }}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         working-directory: ./myapp
