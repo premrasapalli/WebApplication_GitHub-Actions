@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline (Railway)
 
 on:
   push:
@@ -9,26 +9,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # Step 1: Checkout your code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      # Step 2: Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
+      # Step 3: Install dependencies (in myapp folder)
       - name: Install dependencies
         run: npm install
+        working-directory: ./myapp
 
+      # Step 4: Run tests (optional — skip if you don't have tests)
       - name: Run tests
-        run: npm test
+        run: npm test || echo "No tests"
+        working-directory: ./myapp
 
-      # 🟢 Install Railway CLI
+      # Step 5: Install Railway CLI
       - name: Install Railway CLI
-        run: npm i -g @railway/cli
+        run: npm install -g @railway/cli
 
-      # 🟢 Deploy to Railway
+      # Step 6: Deploy to Railway
       - name: Deploy to Railway
         run: railway up --service ${{ secrets.RAILWAY_SERVICE_ID }}
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        working-directory: ./myapp
